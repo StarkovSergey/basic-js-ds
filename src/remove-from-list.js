@@ -1,4 +1,5 @@
 const { NotImplementedError } = require('../extensions/index.js');
+const { testOptional, ListNode } = require('../extensions/index.js');
 
 // const { ListNode } = require('../extensions/list-node.js');
 
@@ -22,6 +23,19 @@ const { NotImplementedError } = require('../extensions/index.js');
  *   }
  * }
  */
+
+
+function convertArrayToList(arr) {
+  return arr.reverse().reduce((acc, cur) => {
+    if (acc) {
+      const node = new ListNode(cur);
+      node.next = acc;
+      return node;
+    }
+
+    return new ListNode(cur);
+  }, null);
+}
 
 // const myList = {
 //   value: 3,
@@ -47,18 +61,29 @@ function removeKFromList(list, k) {
   while(curr) {
     if (curr.value === k) {
       if (prev) {
-        prev.next = curr.next;
+        if (curr.next?.value === k) {
+          prev.next = curr.next?.next;
+        } else {
+          prev.next = curr.next;
+        }
       } else {
         list = curr.next;
       }
     }
 
-    prev = curr;
-    curr = curr.next;
+    if (curr.value !== k && curr.next?.next !== k) {
+      prev = curr;
+      curr = curr.next;
+    } else {
+      curr = curr.next?.next;
+    }
   }
 
   return list;
 }
+
+const initialList = convertArrayToList([1, 2, 3]);
+console.log(removeKFromList(initialList, 3));
 
 module.exports = {
   removeKFromList
